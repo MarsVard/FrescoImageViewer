@@ -35,6 +35,7 @@ public class ImageViewer implements OnDismissListener, DialogInterface.OnKeyList
 
     private static final String TAG = ImageViewer.class.getSimpleName();
 
+    private ImageViewerListener listener;
     private Builder builder;
     private AlertDialog dialog;
     private ImageViewerView viewer;
@@ -50,6 +51,10 @@ public class ImageViewer implements OnDismissListener, DialogInterface.OnKeyList
     public void show() {
         if (!builder.urls.isEmpty()) {
             dialog.show();
+
+            if(getListener() != null)
+                getListener().onImageViewShown();
+
         } else {
             Log.e(TAG, "Urls list cannot be empty! Viewer ignored.");
         }
@@ -72,6 +77,9 @@ public class ImageViewer implements OnDismissListener, DialogInterface.OnKeyList
      */
     @Override
     public void onDismiss() {
+        if(getListener() != null)
+            getListener().onImageViewDismissed();
+
         dialog.cancel();
     }
 
@@ -87,9 +95,19 @@ public class ImageViewer implements OnDismissListener, DialogInterface.OnKeyList
                 viewer.resetScale();
             } else {
                 dialog.cancel();
+                if(getListener() != null)
+                    getListener().onImageViewDismissed();
             }
         }
         return true;
+    }
+
+    public ImageViewerListener getListener() {
+        return listener;
+    }
+
+    public void setListener(ImageViewerListener listener) {
+        this.listener = listener;
     }
 
     /**
